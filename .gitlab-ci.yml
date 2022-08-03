@@ -1,0 +1,21 @@
+stages:
+  - build
+
+cache:
+  key:
+    files:
+      - Gemfile.lock
+  paths:
+    - vendor/bundle
+
+before_script:
+  - bundle install
+
+build_android:
+  image: fabernovel/android:api-31-v1.6.1
+  stage: build
+  script:
+    - bundle exec fastlane build
+  artifacts:
+    paths:
+      - build/app/outputs/apk/debug
