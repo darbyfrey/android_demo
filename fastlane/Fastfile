@@ -16,18 +16,21 @@
 default_platform(:android)
 
 platform :android do
+  before_all do
+    Dotenv.load ".env"
+  end
+
   desc "Runs all the tests"
   lane :test do
     gradle(task: "test")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Submit a new Beta Build to the Google Play store"
   lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
-  
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/release/app-release.aab'
+    )
   end
 
   desc "Deploy a new version to the Google Play"
@@ -38,6 +41,15 @@ platform :android do
 
   desc "Build"
   lane :build do
+    gradle(
+      task: "assemble",
+      flavor: "demo",
+      build_type: "Release"
+    )
+  end
+
+  desc "Build release app bundle"
+  lane :build_bundle do
     gradle(
       task: "assemble",
       flavor: "demo",
